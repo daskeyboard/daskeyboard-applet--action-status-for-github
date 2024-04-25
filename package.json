@@ -1,0 +1,33 @@
+{
+  "name": "daskeyboard-Applet-Github-Action",
+  "version": "1.0.0",
+  "description": "Tracking the progress of GitHub Actions within a repository",
+  "main": "index.js",
+  "repository": "https://github.com/daskeyboard/daskeyboard-Github-Actions-Applet",
+  "author": "Soulaymane Kebli",
+  "license": "MIT",
+  "qConfig": {
+    "geometry": {
+      "width": 10,
+      "height": 1,
+      "defaults": {
+        "origin": {
+          "x": 0,
+          "y": 1
+        }
+      }
+    }
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.1.0",
+    "daskeyboard-applet": "^2.11.5",
+    "dotenv": "^16.4.5",
+    "octokit": "^3.2.0"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "scripts":{
+    "test":"jest"
+  }
+}
