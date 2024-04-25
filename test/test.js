@@ -1,6 +1,5 @@
 const { GitHubActions } = require('../index');
 
-// Créez un mock pour l'instance Octokit
 jest.mock('@octokit/rest', () => {
   return {
     Octokit: jest.fn().mockImplementation(() => {
