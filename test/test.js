@@ -1,4 +1,4 @@
-const { GitHubActions } = require('../index');
+const { GitHubActions } = require('../index.js');
 
 jest.mock('@octokit/rest', () => {
   return {
