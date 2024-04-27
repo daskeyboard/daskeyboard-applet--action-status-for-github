@@ -1,40 +1,33 @@
-GitHub Actions Das Keyboard Q Applet
-===================================
+# GitHub Actions Das Keyboard Q Applet
 
-This applet allows you to track the progress of GitHub Actions within a repository directly on your Das Keyboard Q. Each key represents an action and changes color based on its status: orange when an action starts, green upon successful completion, and red if the action fails.
+This applet allows you to track the status of GitHub Actions within a repository directly on your Das Keyboard Q. The applet gathers the response in one key, which changes color based on the overall status of the actions: orange when all actions are pending, green when all actions are successful, and red if any action fails.
 
-Installation
-------------
-Requires a Das Keyboard Q Series: www.daskeyboard.com
+## Installation
 
-Installation, configuration and uninstallation of applets is done within the Q Desktop application (https://www.daskeyboard.com/q)
+Requires a Das Keyboard Q Series: [www.daskeyboard.com](http://www.daskeyboard.com)
 
-1. Clone this repository and Install the dependencies:
+Installation, configuration, and uninstallation of applets are done within the Q Desktop application: <https://www.daskeyboard.com/q>
 
-yarn install
+1. Install the dependencies:
 
-2. Create a .env file in the root directory of the project and add your GitHub personal access token:
+   
+   <kbd>yarn install</kbd>
+   
 
-GITHUB_TOKEN=your_personal_access_token
+2. During the installation process, you will be asked to provide authentication information (API key) and select the repository you want to track.
 
-3. Run the applet:
+## Usage
 
-node index.js
+Once the applet is running, it will automatically track the GitHub Actions in the specified repository and update the LED on your Das Keyboard Q accordingly.
 
+## Configuration
 
-Usage
------
+You can change the repository being tracked by reinstalling the applet and selecting a different repository during the installation process.
 
-Once the applet is running, it will automatically track the GitHub Actions in the specified repository and update the LEDs on your Das Keyboard Q accordingly.
-
-Configuration
--------------
-
-To change the repository being tracked, update the owner and repo variables in the getGitHubActions method in the index.js file.
-
-Testing
--------
+## Testing
 
 This applet includes a test suite using Jest. To run the tests, use the following command:
 
-yarn test
+<kbd>yarn test</kbd>
+
+The test suite covers the different scenarios for GitHub Actions statuses (pending, successful, and failed) and ensures the applet behaves correctly.
