@@ -1,14 +1,43 @@
 {
-  "name": "daskeyboard-Applet-Github-Action",
+  "name": "daskeyboard-applet-github-action-status",
+  "displayName": "Action Status for GitHub",
   "version": "1.0.0",
-  "description": "Tracking the progress of GitHub Actions within a repository",
-  "main": "index.js",
-  "repository": "https://github.com/daskeyboard/daskeyboard-Github-Actions-Applet",
-  "author": "Soulaymane Kebli",
+  "description": "Track the status of GitHub Actions within a repository",
+  "longDescription": "Stay updated on the progress of your GitHub Actions workflows with a single key on your Das Keyboard.",
+  "isSingleton": false,
+  "icon": "assets/icon.png",
+  "image": "assets/image-missing.png",
+  "authir":"Soulaymane Kebli",
+  "authorUrl": "https://github.com/SoulaymaneK",
+  "issuesUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status/issues",
+  "homePageUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status",
+  "developerRepoUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status",
   "license": "MIT",
+  "changelogUrl": "CHANGELOG.md",
+  "readMeUrl": "README.md",
+  "readMeEndUserUrl": "README_ENDUSER.md",
+  "engines": {
+    "das-keyboard-q": "3.2.3"
+  },
+  "main": "index.js",
+  "authorization": {
+    "type": "apiKey",
+    "hint": "Login or signup for free to get your API key",
+    "supportUrl": "https://github.com/settings/tokens"
+  },
+  "dependencies": {
+    "@octokit/rest": "^20.1.0",
+    "daskeyboard-applet": "^2.11.5"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  },
+  "scripts": {
+    "test": "jest"
+  },
   "qConfig": {
     "geometry": {
-      "width": 10,
+      "width": 1,
       "height": 1,
       "defaults": {
         "origin": {
@@ -17,17 +46,23 @@
         }
       }
     }
-  },
-  "dependencies": {
-    "@octokit/rest": "^20.1.0",
-    "daskeyboard-applet": "^2.11.5",
-    "dotenv": "^16.4.5",
-    "octokit": "^3.2.0"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0"
-  },
-  "scripts":{
-    "test":"jest"
-  }
+  }, 
+  "questions": [
+    {
+      "key": "owner",
+      "label": "GitHub repository owner",
+      "help": "Enter the GitHub username or organization that owns the repository.",
+      "required": true,
+      "order": 1,
+      "controlType": "text"
+    },
+    {
+      "key": "repo",
+      "label": "GitHub repository name",
+      "help": "Enter the name of the repository.",
+      "required": true,
+      "order": 2,
+      "controlType": "text"
+    }
+  ]
 }
