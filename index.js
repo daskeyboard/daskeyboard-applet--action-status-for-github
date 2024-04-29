@@ -9,6 +9,12 @@ const colors = {
 
 const logger = q.logger;
 
+class Status {
+  static PENDING = 'pending';
+  static SUCCESS = 'success';
+  static FAILURE = 'failure';
+}
+
 class GitHubActions extends q.DesktopApp {
   constructor() {
     super();
@@ -45,21 +51,22 @@ class GitHubActions extends q.DesktopApp {
     let hasPending = false;
     let hasFailed = false;
     let hasSuccess = false;
-
+  
     for (const action of actions) {
       switch (action.state) {
         case 'active':
           hasPending = true;
           break;
         case 'completed':
-          hasSuccess = true;
-          break;
-        case 'failed':
-          hasFailed = true;
+          if (action.conclusion === 'success') {
+            hasSuccess = true;
+          } else if (action.conclusion === 'failure') {
+            hasFailed = true;
+          }
           break;
       }
     }
-
+  
     if (hasFailed) {
       return 'failure';
     } else if (hasPending) {
@@ -73,11 +80,11 @@ class GitHubActions extends q.DesktopApp {
 
   getColor(status) {
     switch (status) {
-      case 'pending':
+      case Status.PENDING:
         return colors.pending;
-      case 'success':
+      case Status.SUCCESS:
         return colors.success;
-      case 'failure':
+      case Status.FAILURE:
         return colors.failure;
       default:
         return '#FFFFFF';
@@ -85,24 +92,24 @@ class GitHubActions extends q.DesktopApp {
   }
 
   getSignalName(status, actions) {
-    if (status === 'failure') {
+    if (status === Status.FAILURE) {
       return 'name : Github action failed';
     }
     return 'name : GitHub Actions';
   }
 
   getSignalMessage(status, actions) {
-    if (status === 'failure') {
+    if (status === Status.FAILURE) {
       const failedAction = actions.find((action) => action.state === 'failed');
-      return 'message : Your workflow ${failedAction.name} failed';
+      return `message : Your workflow ${failedAction.name} failed`;
     }
     return 'message : Tracking GitHub Actions';
   }
 
   getSignalLink(status, actions) {
-    if (status === 'failure') {
+    if (status === Status.FAILURE) {
       const failedAction = actions.find((action) => action.state === 'failed');
-      return 'Your workflow ${failedAction.name} failed. Link: ${failedAction.html_url}';
+      return `Your workflow ${failedAction.name} failed. Link: ${failedAction.html_url}`;
     }
     return '';
   }
@@ -111,5 +118,3 @@ class GitHubActions extends q.DesktopApp {
 module.exports = {
   GitHubActions: GitHubActions,
 };
-
-const githubActions = new GitHubActions();
