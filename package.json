@@ -6,11 +6,13 @@
   "longDescription": "Stay updated on the progress of your GitHub Actions workflows with a single key on your Das Keyboard.",
   "isSingleton": false,
   "icon": "assets/icon.png",
-  "image": "assets/colors_legend.png",
-  "author":"Soulaymane Kebli",
+  "image": "assets/image-missing.png",
+  "publisher": "SoulaymaneK",
+  "authorName": "Soulaymane Kebli",
+  "licenseUrl": "https://example.com/license",
   "authorUrl": "https://github.com/SoulaymaneK",
-  "homePageUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status",
   "issuesUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status/issues",
+  "homePageUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status",
   "developerRepoUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status",
   "license": "MIT",
   "changelogUrl": "CHANGELOG.md",
@@ -46,7 +48,7 @@
         }
       }
     }
-  }, 
+  },
   "questions": [
     {
       "key": "owner",
