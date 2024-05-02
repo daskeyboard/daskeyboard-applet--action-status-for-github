@@ -1,13 +1,10 @@
 const { GitHubActions } = require('../index.js');
+const Status = require('../status');
 jest.mock('@octokit/rest', () => {
   return {
     Octokit: jest.fn().mockImplementation(() => {
       return {
-        rest: {
-          actions: {
-            listRepoWorkflows: jest.fn(),
-          },
-        },
+        request: jest.fn(),
       };
     }),
   };
@@ -15,11 +12,11 @@ jest.mock('@octokit/rest', () => {
 
 describe('GitHubActions', () => {
   let githubActions;
-  let mockListRepoWorkflows;
+  let mockRequest;
 
   beforeEach(() => {
     githubActions = new GitHubActions();
-    mockListRepoWorkflows = githubActions.octokit.rest.actions.listRepoWorkflows;
+    mockRequest = githubActions.octokit.request;
   });
 
   it('should create an instance of GitHubActions', () => {
@@ -28,11 +25,13 @@ describe('GitHubActions', () => {
 
   describe('getColor', () => {
     it('should return the correct color for a pending action', async () => {
-      mockListRepoWorkflows.mockResolvedValueOnce({
+      mockRequest.mockResolvedValueOnce({
         data: {
-          workflows: [{ id: 1, state: 'active' }],
+          workflows: [{ id: 1, state: Status.ACTIVE }],
         },
       });
+      githubActions.owner = 'testOwner';
+      githubActions.repo = 'testRepo';
 
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
@@ -42,11 +41,13 @@ describe('GitHubActions', () => {
     });
 
     it('should return the correct color for a successful action', async () => {
-      mockListRepoWorkflows.mockResolvedValueOnce({
+      mockRequest.mockResolvedValueOnce({
         data: {
-          workflows: [{ id: 1, state: 'completed', conclusion: 'success' }],
+          workflows: [{ id: 1, state: Status.COMPLETED, conclusion: Status.SUCCESS }],
         },
       });
+      githubActions.owner = 'testOwner';
+      githubActions.repo = 'testRepo';
 
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
@@ -56,11 +57,13 @@ describe('GitHubActions', () => {
     });
 
     it('should return the correct color for a failed action', async () => {
-      mockListRepoWorkflows.mockResolvedValueOnce({
+      mockRequest.mockResolvedValueOnce({
         data: {
-          workflows: [{ id: 1, state: 'completed', conclusion: 'failure' }],
+          workflows: [{ id: 1, state: Status.COMPLETED, conclusion: Status.FAILURE }],
         },
       });
+      githubActions.owner = 'testOwner';
+      githubActions.repo = 'testRepo';
 
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
@@ -70,15 +73,17 @@ describe('GitHubActions', () => {
     });
 
     it('should return the correct color for 3 failure workflows', async () => {
-      mockListRepoWorkflows.mockResolvedValueOnce({
+      mockRequest.mockResolvedValueOnce({
         data: {
           workflows: [
-            { id: 1, state: 'completed', conclusion: 'failure' },
-            { id: 2, state: 'completed', conclusion: 'failure' },
-            { id: 3, state: 'completed', conclusion: 'failure' },
+            { id: 1, state: Status.COMPLETED, conclusion: Status.FAILURE },
+            { id: 2, state: Status.COMPLETED, conclusion: Status.FAILURE },
+            { id: 3, state: Status.COMPLETED, conclusion: Status.FAILURE },
           ],
         },
       });
+      githubActions.owner = 'testOwner';
+      githubActions.repo = 'testRepo';
 
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
@@ -90,21 +95,23 @@ describe('GitHubActions', () => {
 
   it('should return the correct status for various workflows', async () => {
     const testCases = [
-      { workflows: [{ id: 1, state: 'active' }], expectedStatus: 'pending' },
-      { workflows: [{ id: 1, state: 'completed', conclusion: 'success' }], expectedStatus: 'success' },
-      { workflows: [{ id: 1, state: 'completed', conclusion: 'failure' }], expectedStatus: 'failure' },
-      { workflows: [{ id: 1, state: 'active' }, { id: 2, state: 'completed', conclusion: 'success' }], expectedStatus: 'pending' },
-      { workflows: [{ id: 1, state: 'active' }, { id: 2, state: 'completed', conclusion: 'failure' }], expectedStatus: 'failure' },
-      { workflows: [{ id: 1, state: 'completed', conclusion: 'success' }, { id: 2, state: 'completed', conclusion: 'failure' }], expectedStatus: 'failure' },
-      { workflows: [{ id: 1, state: 'completed', conclusion: 'success' }, { id: 2, state: 'completed', conclusion: 'success' }], expectedStatus: 'success' },
+      { workflows: [{ id: 1, state: Status.ACTIVE }], expectedStatus: Status.PENDING },
+      { workflows: [{ id: 1, state: Status.COMPLETED, conclusion: Status.SUCCESS }], expectedStatus: Status.SUCCESS },
+      { workflows: [{ id: 1, state: Status.COMPLETED, conclusion: Status.FAILURE }], expectedStatus: Status.FAILURE },
+      { workflows: [{ id: 1, state: Status.ACTIVE }, { id: 2, state: Status.COMPLETED, conclusion: Status.SUCCESS }], expectedStatus: Status.PENDING },
+      { workflows: [{ id: 1, state: Status.ACTIVE }, { id: 2, state: Status.COMPLETED, conclusion: Status.FAILURE }], expectedStatus: Status.FAILURE },
+      { workflows: [{ id: 1, state: Status.COMPLETED, conclusion: Status.SUCCESS }, { id: 2, state: Status.COMPLETED, conclusion: Status.FAILURE }], expectedStatus: Status.FAILURE },
+      { workflows: [{ id: 1, state: Status.COMPLETED, conclusion: Status.SUCCESS }, { id: 2, state: Status.COMPLETED, conclusion: Status.SUCCESS }], expectedStatus: Status.SUCCESS },
     ];
-  
+
     for (const testCase of testCases) {
-      mockListRepoWorkflows.mockResolvedValueOnce({ data: { workflows: testCase.workflows } });
-  
+      mockRequest.mockResolvedValueOnce({ data: { workflows: testCase.workflows } });
+      githubActions.owner = 'testOwner';
+      githubActions.repo = 'testRepo';
+
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
-  
+
       expect(status).toBe(testCase.expectedStatus);
     }
   });
