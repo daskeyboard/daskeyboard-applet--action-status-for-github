@@ -1,5 +1,5 @@
 {
-  "name": "daskeyboard-applet-github-action-status",
+  "name": "daskeyboard-aplet--action-status-for-github",
   "displayName": "Action Status for GitHub",
   "version": "1.0.0",
   "description": "Track the status of GitHub Actions within a repository",
@@ -22,17 +22,9 @@
     "das-keyboard-q": "3.2.3"
   },
   "main": "index.js",
-  "authorization": {
-    "type": "apiKey",
-    "hint": "Login or signup for free to get your API key",
-    "supportUrl": "https://github.com/settings/tokens"
-  },
   "dependencies": {
     "@octokit/rest": "^20.1.0",
     "daskeyboard-applet": "^2.11.5"
-  },
-  "devDependencies": {
-    "jest": "^29.7.0"
   },
   "scripts": {
     "test": "jest"
@@ -47,16 +39,20 @@
           "y": 1
         }
       }
-    }
-  },
-  "questions": [
+    },
+    "authorization": {
+      "type": "apiKey",
+      "hint": "Login or signup for free to get your API key",
+      "supportUrl": "https://github.com/settings/tokens"
+    },
+    "questions": [
     {
       "key": "owner",
       "label": "GitHub repository owner",
       "help": "Enter the GitHub username or organization that owns the repository.",
       "required": true,
       "order": 1,
-      "controlType": "text"
+      "controlType": "textbox"
     },
     {
       "key": "repo",
@@ -64,7 +60,11 @@
       "help": "Enter the name of the repository.",
       "required": true,
       "order": 2,
-      "controlType": "text"
+      "controlType": "textbox"
     }
   ]
+},
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
 }
