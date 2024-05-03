@@ -1,5 +1,5 @@
 {
-  "name": "daskeyboard-aplet--action-status-for-github",
+  "name": "daskeyboard-applet--action-status-for-github",
   "displayName": "Action Status for GitHub",
   "version": "1.0.0",
   "description": "Track the status of GitHub Actions within a repository",
@@ -9,7 +9,7 @@
   "image": "assets/image-missing.png",
   "publisher": "SoulaymaneK",
   "authorName": "Soulaymane Kebli",
-  "licenseUrl": "https://example.com/license",
+  "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt",
   "authorUrl": "https://github.com/SoulaymaneK",
   "issuesUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status/issues",
   "homePageUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status",
@@ -19,7 +19,7 @@
   "readMeUrl": "README.md",
   "readMeEndUserUrl": "README_ENDUSER.md",
   "engines": {
-    "das-keyboard-q": "3.2.3"
+    "das-keyboard-q": "4.1.3"
   },
   "main": "index.js",
   "dependencies": {
