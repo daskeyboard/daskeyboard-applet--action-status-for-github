@@ -16,8 +16,11 @@ describe('GitHubActions', () => {
 
   beforeEach(() => {
     githubActions = new GitHubActions();
+    githubActions.owner = 'SoulaymaneK';
+    githubActions.repo = 'daskeyboard-applet--action-status-for-github';
     mockRequest = githubActions.octokit.request;
   });
+  
 
   it('should create an instance of GitHubActions', () => {
     expect(githubActions).toBeInstanceOf(GitHubActions);
@@ -30,8 +33,6 @@ describe('GitHubActions', () => {
           workflows: [{ id: 1, state: Status.ACTIVE }],
         },
       });
-      githubActions.owner = 'testOwner';
-      githubActions.repo = 'testRepo';
 
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
@@ -46,8 +47,6 @@ describe('GitHubActions', () => {
           workflows: [{ id: 1, state: Status.COMPLETED, conclusion: Status.SUCCESS }],
         },
       });
-      githubActions.owner = 'testOwner';
-      githubActions.repo = 'testRepo';
 
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
@@ -62,8 +61,6 @@ describe('GitHubActions', () => {
           workflows: [{ id: 1, state: Status.COMPLETED, conclusion: Status.FAILURE }],
         },
       });
-      githubActions.owner = 'testOwner';
-      githubActions.repo = 'testRepo';
 
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
@@ -82,8 +79,6 @@ describe('GitHubActions', () => {
           ],
         },
       });
-      githubActions.owner = 'testOwner';
-      githubActions.repo = 'testRepo';
 
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
@@ -106,8 +101,6 @@ describe('GitHubActions', () => {
 
     for (const testCase of testCases) {
       mockRequest.mockResolvedValueOnce({ data: { workflows: testCase.workflows } });
-      githubActions.owner = 'testOwner';
-      githubActions.repo = 'testRepo';
 
       const actions = await githubActions.getGitHubActions();
       const status = githubActions.getStatus(actions);
