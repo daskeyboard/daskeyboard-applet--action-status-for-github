@@ -1,6 +1,5 @@
 # Status of GitHub Actions
 
-# insert image here
 ![Status of GitHub Actions](assets/icon.png)
 
 Status of GitHub Actions applet tracks the status of a repository GitHub Actions and change the 
@@ -9,7 +8,7 @@ and orange when an action is running.
 
 ## Developer Documentation
 
-### Github repo
+### GitHub repo
 
 The GitHub repository for this applet is available at: 
 <https://github.com/supercobra/daskeyboard-applet--action-status-for-github>
