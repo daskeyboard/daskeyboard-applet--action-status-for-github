@@ -3,6 +3,8 @@ GitHub Actions Das Keyboard Q Applet
 
 Track GitHub Actions progress directly on your Das Keyboard Q!
 
+**This applet was originally created by [SoulaymaneK](https://github.com/SoulaymaneK/daskeyboard-applet--action-status-for-github)**
+
 Overview
 --------
 
