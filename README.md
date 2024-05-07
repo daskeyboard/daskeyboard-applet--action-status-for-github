@@ -1,6 +1,6 @@
 # Status of GitHub Actions
 
-![Status of GitHub Actions](assets/icon.png)
+![Status of GitHub Actions](assets/colors.png)
 
 Status of GitHub Actions applet tracks the status of a repository GitHub Actions and change the 
 color of a keyboard key accordingly: green when all actions are successful, red if any action fails, 
