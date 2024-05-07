@@ -64,7 +64,8 @@ class ActionStatusForGithub extends q.DesktopApp {
             const workflowRuns = await this.fetchWorkflowRuns(this.config.owner,
                 this.config.repo,
                 this.config.branch);
-            const appletStatus = this.getAppletStatusFromListOfWorkflows(workflowRuns.workflow_runs)
+            const appletStatus = this.getAppletStatusFromListOfWorkflows(workflowRuns)
+            console.log(appletStatus);
             return new q.Signal({
                 points: [[new q.Point(COLORS[appletStatus.status], EFFECTS[appletStatus.status])]],
                 name: `Action Status for ${this.config.owner}/${this.config.repo}/${this.config.branch}`,
@@ -90,15 +91,28 @@ class ActionStatusForGithub extends q.DesktopApp {
 
     }
 
-    async fetchWorkflowRuns(owner, repo, branch) {
-        const response = await this.octokit.actions.listWorkflowRunsForRepo(
-            {
+    async fetchCurrentWorkflowFiles(owner, repo) {
+        try {
+            const { data } = await this.octokit.repos.getContent({
                 owner,
                 repo,
-                branch
-            }
-        )
-        return response.data;
+                path: ".github/workflows"
+            });
+            return data.map(file => file.path);
+        } catch (error) {
+            console.error('Error fetching workflow files:', error);
+            return [];
+        }
+    }
+
+    async fetchWorkflowRuns(owner, repo, branch) {
+        const currentFiles = await this.fetchCurrentWorkflowFiles(owner, repo);
+        const { data } = await this.octokit.actions.listWorkflowRunsForRepo({
+            owner,
+            repo,
+            branch
+        });
+        return data.workflow_runs.filter(run => currentFiles.includes(run.path));
     }
     getAppletStatusFromListOfWorkflows(workflows) {
         if (workflows.length === 0) {
@@ -117,6 +131,7 @@ class ActionStatusForGithub extends q.DesktopApp {
             }
         });
 
+
         const latestRuns = Object.values(latestWorkflows);
         const hasRunning = latestRuns.some(run => run.status !== GITHUB_STATUSES.COMPLETED);
         const hasFailures = latestRuns.some(run => run.status === GITHUB_STATUSES.COMPLETED && run.conclusion === GITHUB_STATUSES.FAILURE);
@@ -125,9 +140,10 @@ class ActionStatusForGithub extends q.DesktopApp {
         let mostRelevantUrl = latestRuns[latestRuns.length - 1].html_url;
 
         if (hasRunning) {
+            const firstRunning = latestRuns.find(run => run.status !== GITHUB_STATUSES.COMPLETED);
             return {
                 status: APPLET_STATUSES.RUNNING,
-                url: mostRelevantUrl,
+                url: firstRunning ? firstRunning.html_url : mostRelevantUrl,
                 message: 'Workflows are still running.'
             };
         } else if (hasFailures) {
