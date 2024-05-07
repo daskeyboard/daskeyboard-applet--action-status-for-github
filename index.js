@@ -119,7 +119,7 @@ class ActionStatusForGithub extends q.DesktopApp {
             return {
                 status: APPLET_STATUSES.NOTHING_YET,
                 url: '',
-                message: 'No workflows have been run yet.'
+                message: 'No workflows have run yet.'
             };
         }
 

@@ -1,12 +1,17 @@
-# GitHub Actions Das Keyboard Q Applet
+# Status of GitHub Actions
 
-**This applet was originally created by [SoulaymaneK](https://github.com/SoulaymaneK/daskeyboard-applet--action-status-for-github)**
+![Status of GitHub Actions](assets/icon.png)
 
-This applet allows you to track the status of GitHub Actions within a repository directly on your Das Keyboard Q. The applet gathers the response in one key, which changes color based on the overall status of the actions: orange when all actions are pending, green when all actions are successful, and red if any action fails.
-
-![Colors Legend](./assets/colors_legend.png)
+Status of GitHub Actions applet tracks the status of a repository GitHub Actions and change the 
+color of a keyboard key accordingly: green when all actions are successful, red if any action fails, 
+and orange when an action is running.
 
 ## Developer Documentation
+
+### GitHub repo
+
+The GitHub repository for this applet is available at: 
+<https://github.com/supercobra/daskeyboard-applet--action-status-for-github>
 
 ### Installation
 
@@ -16,9 +21,9 @@ Installation, configuration, and uninstallation of applets are done within the Q
 
 1. Install the dependencies:
 
-   <kbd>yarn install</kbd>
+<kbd>yarn install</kbd>
 
-2. During the installation process, you will be asked to provide authentication information (API key) and select the repository you want to track.
+1. During the installation process, you will be asked to provide authentication information (API key) and select the repository you want to track.
 
 ### Usage
 
@@ -39,3 +44,7 @@ The test suite covers the different scenarios for GitHub Actions statuses (pendi
 ## End-User Documentation
 
 For end-user documentation, please refer to the [README_ENDUSER.md](README_ENDUSER.md) file.
+
+## Credits
+
+This applet was originally created by [SoulaymaneK](https://github.com/SoulaymaneK/daskeyboard-applet--action-status-for-github).
