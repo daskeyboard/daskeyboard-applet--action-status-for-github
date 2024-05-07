@@ -1,13 +1,43 @@
 const {Octokit} = require('@octokit/rest');
 const q = require('daskeyboard-applet');
 const logger = q.logger;
-const Status = require('./status');
 
-const colors = {
-    [Status.PENDING]: '#FFA500',
-    [Status.SUCCESS]: '#00FF00',
-    [Status.FAILURE]: '#FF0000',
+
+const APPLET_STATUSES = {
+    NOTHING_YET: 'NOTHING_YET', // No runs
+    RUNNING: 'RUNNING', // All workflows are pending or in_progress
+    PASS: 'PASS',       // All workflows succeeded
+    FAIL: 'FAIL'        // At least one workflow failed
 };
+
+const GITHUB_STATUSES = {
+    COMPLETED: 'completed',
+    ACTION_REQUIRED: 'action_required',
+    CANCELLED: 'cancelled',
+    FAILURE: 'failure',
+    NEUTRAL: 'neutral',
+    SKIPPED: 'skipped',
+    STALE: 'stale',
+    SUCCESS: 'success',
+    TIMED_OUT: 'timed_out',
+    IN_PROGRESS: 'in_progress',
+    QUEUED: 'queued',
+    REQUESTED: 'requested',
+    WAITING: 'waiting',
+    PENDING: 'pending'
+};
+
+const COLORS = {
+    [APPLET_STATUSES.RUNNING]: '#FFA500',
+    [APPLET_STATUSES.PASS]: '#00FF00',
+    [APPLET_STATUSES.FAIL]: '#FF0000',
+};
+
+const EFFECTS = {
+    [APPLET_STATUSES.RUNNING]: q.Effects.BLINK,
+    [APPLET_STATUSES.PASS]: q.Effects.SET_COLOR,
+    [APPLET_STATUSES.FAIL]: q.Effects.SET_COLOR
+}
 
 
 class ActionStatusForGithub extends q.DesktopApp {
@@ -18,11 +48,11 @@ class ActionStatusForGithub extends q.DesktopApp {
     }
 
     async applyConfig() {
-        this.octokit = new Octokit({auth: this.config.apiKey});
+        this.octokit = new Octokit({auth: this.authorization.apiKey});
     }
 
     isConfigured() {
-        return this.octokit && this.config.owner?.length > 0 && this.config.repo?.length > 0;
+        return this.octokit && this.config.owner?.length > 0 && this.config.repo?.length > 0 && this.config.branch?.length > 0;
     }
 
     async run() {
@@ -31,17 +61,24 @@ class ActionStatusForGithub extends q.DesktopApp {
             return;
         }
         try {
-            const actions = await this.fetchWorkflowRuns(this.config.owner, this.config.repo);
-            const status = this.getStatus(actions);
-            const color = this.getColor(status);
+            const workflowRuns = await this.fetchWorkflowRuns(this.config.owner,
+                this.config.repo,
+                this.config.branch);
+            const appletStatus = this.getAppletStatusFromListOfWorkflows(workflowRuns.workflow_runs)
+            return new q.Signal({
+                points: [[new q.Point(COLORS[appletStatus.status], EFFECTS[appletStatus.status])]],
+                name: `Action Status for ${this.config.owner}/${this.config.repo}/${this.config.branch}`,
+                message: appletStatus.message,
+                link: {
+                    url: appletStatus.url,
+                    label: 'View on Github'
+                }
+            })
         } catch (error) {
             logger.error(
-                `Got error sending request to service: ${JSON.stringify(error)}`);
+                `Got error sending request to service: ${error}`);
             if (`${error.message}`.includes("getaddrinfo")) {
                 // Do not send signal when getting internet connection error
-                // return q.Signal.error(
-                //   'The Montastic service returned an error. <b>Please check your internet connection</b>.'
-                // );
             } else {
                 return q.Signal.error([
                     'The Github service returned an error. <b>Please check your Github token and its permissions</b>.',
@@ -51,106 +88,66 @@ class ActionStatusForGithub extends q.DesktopApp {
 
         }
 
-        // try {
-        //     const actions = await this.getGitHubActions();
-        //     const status = this.getStatus(actions);
-        //     const color = this.getColor(status);
-        //
-        //     return new q.Signal({
-        //         points: [new q.Point(color)],
-        //         name: this.getSignalName(status, actions),
-        //         message: this.getSignalMessage(status, actions),
-        //         link: this.getSignalLink(status, actions),
-        //         isMuted: true,
-        //     });
-        // } catch (error) {
-        //     logger.error('Error fetching GitHub Actions:', error);
-        //     return new q.Signal({
-        //         points: [new q.Point('#FF0000')],
-        //         name: 'GitHub Actions',
-        //         message: 'Error fetching GitHub Actions. Please check your configuration and API key.',
-        //         isMuted: false,
-        //     });
-        // }
     }
 
-    async fetchWorkflowRuns(owner, repo) {
+    async fetchWorkflowRuns(owner, repo, branch) {
         const response = await this.octokit.actions.listWorkflowRunsForRepo(
             {
                 owner,
                 repo,
+                branch
             }
         )
-        console.log('response', response.data);
-        return []
+        return response.data;
     }
+    getAppletStatusFromListOfWorkflows(workflows) {
+        if (workflows.length === 0) {
+            return {
+                status: APPLET_STATUSES.NOTHING_YET,
+                url: '',
+                message: 'No workflows have been run yet.'
+            };
+        }
 
-    // async getGitHubActions() {
-    //   const response = await this.octokit.request(`GET /repos/${this.owner}/${this.repo}/actions/workflows`, {
-    //     headers: this.serviceHeaders,
-    //   });
-    //   console.log('response data', response.data)
-    //   return response.data.workflows.map((workflow) => [workflow.name, workflow.state, workflow.conclusion]);
-    // }
-
-    getStatus(actions) {
-        let hasPending = false;
-        let hasFailed = false;
-        let hasSuccess = false;
-        const Default = Status.DEFAULT;
-
-        for (const action of actions) {
-            switch (action[1]) {
-                case Status.ACTIVE:
-                    hasPending = true;
-                    break;
-                case Status.COMPLETED:
-                    if (action[2] === Status.SUCCESS) {
-                        hasSuccess = true;
-                    } else if (action[2] === Status.FAILURE) {
-                        hasFailed = true;
-                    }
-                    break;
+        // Group workflows by name and select the most recent run of each
+        const latestWorkflows = {};
+        workflows.forEach(workflow => {
+            if (!latestWorkflows[workflow.name] || new Date(latestWorkflows[workflow.name].created_at) < new Date(workflow.created_at)) {
+                latestWorkflows[workflow.name] = workflow;
             }
-        }
+        });
 
-        if (hasFailed) {
-            return Status.FAILURE;
-        } else if (hasPending) {
-            return Status.PENDING;
-        } else if (hasSuccess) {
-            return Status.SUCCESS;
+        const latestRuns = Object.values(latestWorkflows);
+        const hasRunning = latestRuns.some(run => run.status !== GITHUB_STATUSES.COMPLETED);
+        const hasFailures = latestRuns.some(run => run.status === GITHUB_STATUSES.COMPLETED && run.conclusion === GITHUB_STATUSES.FAILURE);
+
+        // Default to the most recent run's URL
+        let mostRelevantUrl = latestRuns[latestRuns.length - 1].html_url;
+
+        if (hasRunning) {
+            return {
+                status: APPLET_STATUSES.RUNNING,
+                url: mostRelevantUrl,
+                message: 'Workflows are still running.'
+            };
+        } else if (hasFailures) {
+            // Find the first failed workflow for the URL
+            const firstFailed = latestRuns.find(run => run.conclusion === GITHUB_STATUSES.FAILURE);
+            mostRelevantUrl = firstFailed ? firstFailed.html_url : mostRelevantUrl;
+            return {
+                status: APPLET_STATUSES.FAIL,
+                url: mostRelevantUrl,
+                message: 'At least one workflow has failed. Check details.'
+            };
         } else {
-            return Default;
+            return {
+                status: APPLET_STATUSES.PASS,
+                url: mostRelevantUrl,
+                message: 'All workflows have passed successfully.'
+            };
         }
     }
 
-    getColor(status) {
-        return colors[status] || '#FFFFFF';
-    }
-
-    getSignalName(status, actions) {
-        if (status === Status.FAILURE) {
-            return 'name : Github action failed';
-        }
-        return 'name : GitHub Actions';
-    }
-
-    getSignalMessage(status, actions) {
-        if (status === Status.FAILURE) {
-            const failedAction = actions.find((action) => action[1] === Status.FAILED);
-            return `message : Your workflow ${failedAction[0]} failed`;
-        }
-        return 'message : Tracking GitHub Actions';
-    }
-
-    getSignalLink(status, actions) {
-        if (status === Status.FAILURE) {
-            const failedAction = actions.find((action) => action[1] === Status.FAILED);
-            return `Your workflow ${failedAction[0]} failed. Link: ${failedAction[3]}`;
-        }
-        return `Link: https://github.com/${this.config.owner}/${this.config.repo}/actions`;
-    }
 }
 
 const githubActions = new ActionStatusForGithub();

@@ -3,17 +3,17 @@
   "displayName": "Action Status for GitHub",
   "version": "1.0.0",
   "description": "Track the status of GitHub Actions within a repository",
-  "longDescription": "Stay updated on the progress of your GitHub Actions workflows with a single key on your Das Keyboard.",
+  "longDescription": "Stay updated on the progress of your GitHub Actions workflows on your Das Keyboard.",
   "isSingleton": false,
   "icon": "assets/icon.png",
   "image": "assets/image-missing.png",
-  "publisher": "SoulaymaneK",
-  "authorName": "Soulaymane Kebli",
+  "publisher": "Das Keyboard",
+  "authorName": "Das Keyboard",
   "licenseUrl": "https://www.gnu.org/licenses/old-licenses/gpl-2.0.txt",
-  "authorUrl": "https://github.com/SoulaymaneK",
-  "issuesUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status/issues",
-  "homePageUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status",
-  "developerRepoUrl": "https://github.com/SoulaymaneK/daskeyboard-applet-github-action-status",
+  "authorUrl": "https://github.com/daskeyboard",
+  "issuesUrl": "https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github/issues",
+  "homePageUrl": "https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github",
+  "developerRepoUrl": "https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github",
   "license": "MIT",
   "changelogUrl": "CHANGELOG.md",
   "readMeUrl": "README.md",
@@ -61,7 +61,16 @@
       "required": true,
       "order": 2,
       "controlType": "textbox"
-    }
+    },
+      {
+        "key": "branch",
+        "label": "Branch name",
+        "help": "Enter the name of the branch to track.",
+        "required": true,
+        "order": 3,
+        "controlType": "textbox",
+        "value": "main"
+      }
   ]
 },
   "devDependencies": {

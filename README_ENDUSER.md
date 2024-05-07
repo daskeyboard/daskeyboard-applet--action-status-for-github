@@ -14,7 +14,10 @@ Easy Installation
 1. Download and install the applet from the Das Keyboard Q Applet Marketplace.
 2. Create a GitHub personal access token with the minimum required permissions:
 	* To create a personal access token, go to your [GitHub settings](https://github.com/settings/tokens).
-	* Click on "New SSH key or token" (classic) or "Generate new token" (new UI).
+    * On the left sidebar, click on "Developer settings".
+    * Click on "Personal access tokens".
+    * Click on "Tokens (classic)"
+    * Click on "Generate new token" (classic) or "New token" (new UI).
 	* Give your token a descriptive name, such as "Das Keyboard Q Applet".
 	* Under "Select scopes", grant the token the "repo" permission. This permission provides read-only access to repository metadata, commits, and pull requests, which is sufficient for the applet to function.
 	* Click on "Generate token" (classic) or "Create token" (new UI) to create the token.
