@@ -41,9 +41,9 @@
       }
     },
     "authorization": {
-      "type": "apiKey",
-      "hint": "Login or signup for free to get your API key",
-      "supportUrl": "https://github.com/settings/tokens"
+      "type": "Personal access token",
+      "hint": "Follow the instructions in the README to create a personal access token.",
+      "supportUrl": "https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github/blob/main/README_ENDUSER.md"
     },
     "questions": [
     {
