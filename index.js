@@ -105,6 +105,18 @@ class ActionStatusForGithub extends q.DesktopApp {
         }
     }
 
+    /**
+     * Fetches workflow runs for a specified GitHub repository branch and filters them
+     * based on currently active workflow files in the repository. This ensures that only
+     * relevant workflows (those defined in the `.github/workflows` directory) are considered.
+     *
+     * @param {string} owner - The GitHub username or organization name that owns the repository.
+     * @param {string} repo - The name of the repository from which to fetch workflow runs.
+     * @param {string} branch - The branch name for which to fetch workflow runs.
+     * @returns {Promise<Array>} - A promise that resolves to an array of workflow runs that are active,
+     *                              filtering out any that correspond to deleted or inactive workflows.
+     */
+
     async fetchWorkflowRuns(owner, repo, branch) {
         const currentFiles = await this.fetchCurrentWorkflowFiles(owner, repo);
         const { data } = await this.octokit.actions.listWorkflowRunsForRepo({
@@ -114,6 +126,20 @@ class ActionStatusForGithub extends q.DesktopApp {
         });
         return data.workflow_runs.filter(run => currentFiles.includes(run.path));
     }
+
+    /**
+     * Analyzes a list of GitHub workflow runs and determines the overall status of these workflows.
+     * This method groups workflows by name to select the most recent run for each workflow, then
+     * evaluates their status to provide a summarized status of RUNNING, PASS, or FAIL. Additionally,
+     * it determines the most relevant URL to view the details of the workflow state in the GitHub UI.
+     *
+     * @param {Array} workflows - An array of workflow run objects from GitHub, where each object
+     *                            includes properties like name, created_at, status, conclusion, and html_url.
+     * @returns {Object} - An object containing:
+     *                     - status: A string representing the overall status (RUNNING, PASS, or FAIL).
+     *                     - url: A string URL pointing to the most relevant workflow run for further details.
+     *                     - message: A descriptive message about the overall workflow status.
+     */
     getAppletStatusFromListOfWorkflows(workflows) {
         if (workflows.length === 0) {
             return {
