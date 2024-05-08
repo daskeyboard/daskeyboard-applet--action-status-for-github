@@ -1,7 +1,7 @@
 {
   "name": "daskeyboard-applet--action-status-for-github",
   "displayName": "Action Status for GitHub",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Track the status of GitHub Actions within a repository",
   "longDescription": "Stay updated on the progress of your GitHub Actions workflows on your Das Keyboard.",
   "isSingleton": false,
