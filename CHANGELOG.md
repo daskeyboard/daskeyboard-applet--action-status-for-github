@@ -1,6 +1,6 @@
 # Changelog Q Applet Montastic
 
-## Version 1.0.1 - May 8, 2024
+## Version 1.0.2 - May 8, 2024
 
 Typo and language fixes.
 

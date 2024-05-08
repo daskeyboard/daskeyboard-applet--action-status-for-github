@@ -1,7 +1,7 @@
 {
   "name": "daskeyboard-applet--action-status-for-github",
   "displayName": "Action Status for GitHub",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Track the status of GitHub Actions within a repository",
   "longDescription": "Stay updated on the progress of your GitHub Actions workflows on your Das Keyboard.",
   "isSingleton": false,
@@ -41,7 +41,7 @@
       }
     },
     "authorization": {
-      "type": "Personal access token",
+      "type": "apiKey",
       "hint": "Follow the instructions in the README to create a personal access token.",
       "supportUrl": "https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github/blob/main/README_ENDUSER.md"
     },
