@@ -1,5 +1,6 @@
 const {Octokit} = require('@octokit/rest');
 const q = require('daskeyboard-applet');
+const yaml = require('js-yaml');
 const logger = q.logger;
 
 
@@ -65,7 +66,6 @@ class ActionStatusForGithub extends q.DesktopApp {
                 this.config.repo,
                 this.config.branch);
             const appletStatus = this.getAppletStatusFromListOfWorkflows(workflowRuns)
-            console.log(appletStatus);
             return new q.Signal({
                 points: [[new q.Point(COLORS[appletStatus.status], EFFECTS[appletStatus.status])]],
                 name: `Action Status for ${this.config.owner}/${this.config.repo}/${this.config.branch}`,
@@ -91,16 +91,28 @@ class ActionStatusForGithub extends q.DesktopApp {
 
     }
 
+
     async fetchCurrentWorkflowFiles(owner, repo) {
         try {
-            const { data } = await this.octokit.repos.getContent({
+            const {data} = await this.octokit.repos.getContent({
                 owner,
                 repo,
                 path: ".github/workflows"
             });
-            return data.map(file => file.path);
+            const files = await Promise.all(data.map(async file => {
+                const fileData = await this.octokit.repos.getContent({
+                    owner,
+                    repo,
+                    path: file.path
+                });
+                return {
+                    path: file.path,
+                    content: Buffer.from(fileData.data.content, 'base64').toString('utf8') // Decoding from Base64
+                };
+            }));
+            return files;
         } catch (error) {
-            console.error('Error fetching workflow files:', error);
+            logger.error(`Error fetching workflow files: ${error}`);
             return [];
         }
     }
@@ -118,13 +130,50 @@ class ActionStatusForGithub extends q.DesktopApp {
      */
 
     async fetchWorkflowRuns(owner, repo, branch) {
-        const currentFiles = await this.fetchCurrentWorkflowFiles(owner, repo);
-        const { data } = await this.octokit.actions.listWorkflowRunsForRepo({
+        const currentWorkflows = await this.fetchCurrentWorkflowFiles(owner, repo);
+        const {data} = await this.octokit.actions.listWorkflowRunsForRepo({
             owner,
             repo,
             branch
         });
-        return data.workflow_runs.filter(run => currentFiles.includes(run.path));
+
+        // Map each run to a promise that resolves whether the run is active
+        const runs = await Promise.all(data.workflow_runs.map(async run => {
+            const jobs = await this.fetchJobsForRun(run.jobs_url);
+            const workflowFile = currentWorkflows.find(wf => wf.path === run.path);
+            if (workflowFile && await this.isRunJobActive(jobs, workflowFile.content)) {
+                return run; // Keep this run as it's still active
+            }
+            return null; // Filter out this run as it's not active anymore
+        }));
+
+        // Filter out null values from runs array
+        return runs.filter(run => run !== null);
+    }
+
+
+    async fetchJobsForRun(jobsUrl) {
+        try {
+            const {data} = await this.octokit.request(jobsUrl);
+            console.log('+++Jobs', data.jobs.map(job => job.name))
+            return data.jobs.map(job => job.name);  // Assuming the job details are in `data.jobs`
+        } catch (error) {
+            console.error('Error fetching job details:', error);
+            return [];
+        }
+    }
+
+    async isRunJobActive(runJobs, workflowContent) {
+        try {
+            const workflowData = yaml.load(workflowContent);
+            const activeJobs = workflowData.jobs ? Object.keys(workflowData.jobs) : [];
+
+            // Check if any of the jobs in the run still exists in the active job list from the YAML
+            return runJobs.some(jobName => activeJobs.includes(jobName));
+        } catch (error) {
+            console.error('Error parsing workflow YAML:', error);
+            return false;
+        }
     }
 
     /**
@@ -157,6 +206,8 @@ class ActionStatusForGithub extends q.DesktopApp {
             }
         });
 
+        console.log('+++Latest Workflows', latestWorkflows)
+
 
         const latestRuns = Object.values(latestWorkflows);
         const hasRunning = latestRuns.some(run => run.status !== GITHUB_STATUSES.COMPLETED);
@@ -165,6 +216,7 @@ class ActionStatusForGithub extends q.DesktopApp {
         // Default to the most recent run's URL
         let mostRelevantUrl = latestRuns[latestRuns.length - 1].html_url;
 
+        console.log('hasRunning', hasRunning, 'hasFailures', hasFailures, 'mostRelevantUrl', mostRelevantUrl)
         if (hasRunning) {
             const firstRunning = latestRuns.find(run => run.status !== GITHUB_STATUSES.COMPLETED);
             return {

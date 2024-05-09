@@ -24,7 +24,8 @@
   "main": "index.js",
   "dependencies": {
     "@octokit/rest": "^20.1.0",
-    "daskeyboard-applet": "^2.11.5"
+    "daskeyboard-applet": "^2.11.5",
+    "js-yaml": "^4.1.0"
   },
   "scripts": {
     "test": "jest"
@@ -46,22 +47,22 @@
       "supportUrl": "https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github/blob/main/README_ENDUSER.md"
     },
     "questions": [
-    {
-      "key": "owner",
-      "label": "GitHub repository owner",
-      "help": "Enter the GitHub username or organization that owns the repository.",
-      "required": true,
-      "order": 1,
-      "controlType": "textbox"
-    },
-    {
-      "key": "repo",
-      "label": "GitHub repository name",
-      "help": "Enter the name of the repository.",
-      "required": true,
-      "order": 2,
-      "controlType": "textbox"
-    },
+      {
+        "key": "owner",
+        "label": "GitHub repository owner",
+        "help": "Enter the GitHub username or organization that owns the repository.",
+        "required": true,
+        "order": 1,
+        "controlType": "textbox"
+      },
+      {
+        "key": "repo",
+        "label": "GitHub repository name",
+        "help": "Enter the name of the repository.",
+        "required": true,
+        "order": 2,
+        "controlType": "textbox"
+      },
       {
         "key": "branch",
         "label": "Branch name",
@@ -71,8 +72,8 @@
         "controlType": "textbox",
         "value": "main"
       }
-  ]
-},
+    ]
+  },
   "devDependencies": {
     "jest": "^29.7.0"
   }
