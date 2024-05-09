@@ -65,7 +65,19 @@ class ActionStatusForGithub extends q.DesktopApp {
             const workflowRuns = await this.fetchWorkflowRuns(this.config.owner,
                 this.config.repo,
                 this.config.branch);
-            const appletStatus = this.getAppletStatusFromListOfWorkflows(workflowRuns)
+
+            let appletStatus;
+
+
+            if (workflowRuns.length === 0) {
+                appletStatus = {
+                    status: APPLET_STATUSES.NOTHING_YET,
+                    url: '',
+                    message: 'No workflows have run yet.'
+                };
+            } else {
+                appletStatus = this.getAppletStatusFromListOfWorkflows(workflowRuns)
+            }
             return new q.Signal({
                 points: [[new q.Point(COLORS[appletStatus.status], EFFECTS[appletStatus.status])]],
                 name: `Action Status for ${this.config.owner}/${this.config.repo}/${this.config.branch}`,
@@ -137,8 +149,16 @@ class ActionStatusForGithub extends q.DesktopApp {
             branch
         });
 
+        // Group workflows by name and select the most recent run of each
+        const latestWorkflows = {};
+        data.workflow_runs.forEach(workflow => {
+            if (!latestWorkflows[workflow.name] || new Date(latestWorkflows[workflow.name].created_at) < new Date(workflow.created_at)) {
+                latestWorkflows[workflow.name] = workflow;
+            }
+        });
+
         // Map each run to a promise that resolves whether the run is active
-        const runs = await Promise.all(data.workflow_runs.map(async run => {
+        const runs = await Promise.all(Object.values(latestWorkflows).map(async run => {
             const jobs = await this.fetchJobsForRun(run.jobs_url);
             const workflowFile = currentWorkflows.find(wf => wf.path === run.path);
             if (workflowFile && await this.isRunJobActive(jobs, workflowFile.content)) {
@@ -189,24 +209,9 @@ class ActionStatusForGithub extends q.DesktopApp {
      *                     - message: A descriptive message about the overall workflow status.
      */
     getAppletStatusFromListOfWorkflows(workflows) {
-        if (workflows.length === 0) {
-            return {
-                status: APPLET_STATUSES.NOTHING_YET,
-                url: '',
-                message: 'No workflows have run yet.'
-            };
-        }
-
-        // Group workflows by name and select the most recent run of each
-        const latestWorkflows = {};
-        workflows.forEach(workflow => {
-            if (!latestWorkflows[workflow.name] || new Date(latestWorkflows[workflow.name].created_at) < new Date(workflow.created_at)) {
-                latestWorkflows[workflow.name] = workflow;
-            }
-        });
 
 
-        const latestRuns = Object.values(latestWorkflows);
+        const latestRuns = Object.values(workflows);
         const hasRunning = latestRuns.some(run => run.status !== GITHUB_STATUSES.COMPLETED);
         const hasFailures = latestRuns.some(run => run.status === GITHUB_STATUSES.COMPLETED && run.conclusion === GITHUB_STATUSES.FAILURE);
 
