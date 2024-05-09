@@ -155,10 +155,9 @@ class ActionStatusForGithub extends q.DesktopApp {
     async fetchJobsForRun(jobsUrl) {
         try {
             const {data} = await this.octokit.request(jobsUrl);
-            console.log('+++Jobs', data.jobs.map(job => job.name))
             return data.jobs.map(job => job.name);  // Assuming the job details are in `data.jobs`
         } catch (error) {
-            console.error('Error fetching job details:', error);
+            logger.error(`Error fetching job details: ${error}`);
             return [];
         }
     }
@@ -171,7 +170,7 @@ class ActionStatusForGithub extends q.DesktopApp {
             // Check if any of the jobs in the run still exists in the active job list from the YAML
             return runJobs.some(jobName => activeJobs.includes(jobName));
         } catch (error) {
-            console.error('Error parsing workflow YAML:', error);
+            logger.error(`Error parsing workflow YAML: ${error}`)
             return false;
         }
     }
@@ -206,8 +205,6 @@ class ActionStatusForGithub extends q.DesktopApp {
             }
         });
 
-        console.log('+++Latest Workflows', latestWorkflows)
-
 
         const latestRuns = Object.values(latestWorkflows);
         const hasRunning = latestRuns.some(run => run.status !== GITHUB_STATUSES.COMPLETED);
@@ -216,7 +213,6 @@ class ActionStatusForGithub extends q.DesktopApp {
         // Default to the most recent run's URL
         let mostRelevantUrl = latestRuns[latestRuns.length - 1].html_url;
 
-        console.log('hasRunning', hasRunning, 'hasFailures', hasFailures, 'mostRelevantUrl', mostRelevantUrl)
         if (hasRunning) {
             const firstRunning = latestRuns.find(run => run.status !== GITHUB_STATUSES.COMPLETED);
             return {
