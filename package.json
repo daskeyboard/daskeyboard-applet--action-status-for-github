@@ -1,9 +1,9 @@
 {
   "name": "daskeyboard-applet--action-status-for-github",
   "displayName": "Action Status for GitHub",
-  "version": "1.0.4",
-  "description": "Track the status of GitHub Actions within a repository",
-  "longDescription": "Stay updated on the progress of your GitHub Actions workflows on your Das Keyboard.",
+  "version": "1.0.5",
+  "description": "Track the status of GitHub Actions on your keyboard",
+  "longDescription": "Stay updated on the progress of your GitHub Actions for one or multiple repositories.",
   "isSingleton": false,
   "icon": "assets/icon.png",
   "image": "assets/image-missing.png",
@@ -76,5 +76,6 @@
   },
   "devDependencies": {
     "jest": "^29.7.0"
-  }
+  },
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }
