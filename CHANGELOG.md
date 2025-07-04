@@ -1,5 +1,9 @@
 # Changelog Q Applet Montastic
 
+## Version 1.0.5 - July 4, 2025
+
+Better README and README_ENDUSER.md.
+
 ## Version 1.0.4 - May 9, 2024
 
 Only fetch files for latest workflows instead of for all workflows to not exceed rate limit.
