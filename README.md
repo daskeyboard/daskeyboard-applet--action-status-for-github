@@ -1,50 +1,133 @@
-# Status of GitHub Actions
+# 🚀 GitHub Actions Status Applet for Das Keyboard Q
 
 ![Status of GitHub Actions](assets/colors.png)
 
-Status of GitHub Actions applet tracks the status of a repository GitHub Actions and change the 
-color of a keyboard key accordingly: green when all actions are successful, red if any action fails, 
-and orange when an action is running.
+> 💡 **Real-time GitHub Actions monitoring directly on your Das Keyboard Q Series**
 
-## Developer Documentation
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github)
 
-### GitHub repo
+## 🎯 Overview
 
-The GitHub repository for this applet is available at: 
-<https://github.com/supercobra/daskeyboard-applet--action-status-for-github>
+This applet transforms your Das Keyboard Q into a **live GitHub Actions dashboard**! 🎹✨ Monitor your repository's CI/CD pipeline status with instant visual feedback through dynamic LED colors.
 
-### Installation
+## ✨ Key Features
 
-Requires a Das Keyboard Q Series: [www.daskeyboard.com](http://www.daskeyboard.com)
+🔥 **Real-time Monitoring**: Instant updates on GitHub Actions status
+🔄 **Multi-Repository Support**: Track multiple repos by adding the applet multiple times
+🎨 **Color-Coded Status Indicators**:
 
-Installation, configuration, and uninstallation of applets are done within the Q Desktop application: <https://www.daskeyboard.com/q>
+- 🟢 **Green**: All actions successful ✅
+- 🔴 **Red**: Actions failed ❌
+- 🟠 **Blinking Orange**: Actions running ⏳
 
-1. Install the dependencies:
+## 🛠️ Developer Quick Start
 
-<kbd>yarn install</kbd>
+### 📋 Prerequisites
 
-1. During the installation process, you will be asked to provide authentication information (API key) and select the repository you want to track.
+- 🎹 **Das Keyboard Q Series** - [Get yours here](http://www.daskeyboard.com)
+- 🖥️ **Q Desktop Application** - [Download here](https://www.daskeyboard.com/q)
+- 🔑 **GitHub API Token** - [Create one here](https://github.com/settings/tokens)
 
-### Usage
+### 🚀 Installation
 
-Once the applet is running, it will automatically track the GitHub Actions in the specified repository and update the LED on your Das Keyboard Q accordingly.
+1. **Install dependencies**:
 
-### Configuration
+   ```bash
+   yarn install
+   ```
 
-You can change the repository being tracked by reinstalling the applet and selecting a different repository during the installation process.
+2. **Configure your GitHub token**:
+   - Generate a personal access token with `repo` scope
+   - Configure during applet installation in Q Desktop
 
-### Testing
+3. **Select your repository**:
+   - Choose the repository you want to monitor
+   - The applet will automatically start tracking
 
-This applet includes a test suite using Jest. To run the tests, use the following command:
+### 🧪 Testing
 
-<kbd>yarn test</kbd>
+Run the comprehensive test suite:
 
-The test suite covers the different scenarios for GitHub Actions statuses (pending, successful, and failed) and ensures the applet behaves correctly.
+```bash
+yarn test
+```
 
-## End-User Documentation
+**Test Coverage**:
 
-For end-user documentation, please refer to the [README_ENDUSER.md](README_ENDUSER.md) file.
+- ✅ Pending actions scenarios
+- ✅ Successful actions validation
+- ✅ Failed actions handling
+- ✅ API response parsing
+- ✅ Error handling and edge cases
 
-## Credits
+### 🔧 Configuration Options
 
-This applet was originally created by [SoulaymaneK](https://github.com/SoulaymaneK/daskeyboard-applet--action-status-for-github).
+| Parameter | Description | Required |
+|-----------|-------------|----------|
+| **Repository** | Target GitHub repository (owner/repo) | ✅ |
+| **API Token** | GitHub personal access token | ✅ |
+| **Polling Interval** | How often to check status (default: 60s) | ❌ |
+| **Key Position** | Which key to illuminate | ❌ |
+
+### 🏗️ Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   GitHub API    │◄──►│   Das Keyboard  │◄──►│   Q Desktop     │
+│   (Actions)     │    │   Q Applet      │    │   Application   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### 📡 API Integration
+
+The applet uses the [GitHub Actions API](https://docs.github.com/en/rest/actions) to:
+- 🔍 Fetch workflow runs
+- 📊 Aggregate status across all workflows
+- ⚡ Provide real-time updates
+
+### 🐛 Troubleshooting
+
+**Common Issues**:
+
+🔴 **Red Key Not Clearing**:
+
+- Check if failed actions have been re-run
+- Verify API token permissions
+
+🟠 **Orange Key Stuck**:
+
+- Ensure workflows aren't stuck in pending state
+- Check repository webhook configuration
+
+🔑 **API Authentication**:
+
+- Verify token has correct scopes (`repo` minimum)
+- Check token expiration date
+
+### 🤝 Contributing
+
+1. **Fork the repository**
+2. **Create a feature branch**: `git checkout -b feature/amazing-feature`
+3. **Make your changes**
+4. **Run tests**: `yarn test`
+5. **Commit your changes**: `git commit -m 'Add amazing feature'`
+6. **Push to branch**: `git push origin feature/amazing-feature`
+7. **Open a Pull Request**
+
+### 📚 Documentation
+
+- 📖 **End-User Guide**: [README_ENDUSER.md](README_ENDUSER.md)
+- 🔧 **API Documentation**: [GitHub Actions API](https://docs.github.com/en/rest/actions)
+- 🎹 **Das Keyboard Q SDK**: [Q Desktop Developer Guide](https://www.daskeyboard.com/q)
+
+### 🏆 Credits
+
+Originally created by [SoulaymaneK](https://github.com/SoulaymaneK/daskeyboard-applet--action-status-for-github) 👨‍💻
+
+### 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+**🎹 Happy Coding with Das Keyboard Q!** ✨
