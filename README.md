@@ -4,7 +4,7 @@
 
 > 💡 **Real-time GitHub Actions monitoring directly on your Das Keyboard Q Series**
 
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github)
+Repo: <https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github>
 
 ## 🎯 Overview
 
@@ -18,7 +18,7 @@ This applet transforms your Das Keyboard Q into a **live GitHub Actions dashboar
 
 - 🟢 **Green**: All actions successful ✅
 - 🔴 **Red**: Actions failed ❌
-- 🟠 **Blinking Orange**: Actions running ⏳
+- 🟠 **Blinking Orange**: Actions running
 
 ## 🛠️ Developer Quick Start
 

@@ -1,6 +1,6 @@
 # 🎯 Status of GitHub Actions
 
-See the status of GitHub Actions on your keyboard! 🎮
+See the status of GitHub Actions on your keyboard. 🎮
 
 ![Status of GitHub Actions](assets/colors.png)
 
@@ -35,7 +35,7 @@ See the status of GitHub Actions on your keyboard! 🎮
 * 👤 The repository owner's username
 * 📁 The desired repository name
 
-🎉 Once the applet is installed, it will track the GitHub Actions in the specified repository and update the LED color on your Das Keyboard Q!
+🎉 Once the applet is installed, it will track the GitHub Actions in the specified repository and update the LED color on your Das Keyboard Q.
 
 ## 🔒 Security
 
@@ -43,7 +43,7 @@ See the status of GitHub Actions on your keyboard! 🎮
 
 ## 📚 Source Code
 
-[![GitHub](https://img.shields.io/badge/GitHub-Repository-blue?logo=github)](https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github)
+<https://github.com/daskeyboard/daskeyboard-applet--action-status-for-github>
 
 ## 👏 Credit
 
